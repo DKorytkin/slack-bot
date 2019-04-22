@@ -1,11 +1,11 @@
 
 import os
 
-from slack_bot import Application, Route
+from slack_bot import Application, Response, Route
 
 
 def say_hello(request):
-    return f'Hi! {request}'
+    return Response(request=request, text=f'Hi! {request.user}')
 
 
 if __name__ == '__main__':

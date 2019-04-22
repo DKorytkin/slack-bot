@@ -1,6 +1,6 @@
 
 # slack_bot
-Template app for make slack bot
+Application for easy make slack bot
 
 
 ## Getting Started:
@@ -16,15 +16,15 @@ pip install slack_bot
 ```python
 import os
 
-from slack_bot.bot import Application
+from slack_bot.bot import Application, Response
 
 
 app = Application(token=os.getenv('SLACK_TOKEN'))
 
 
 @app.route('hello')
-def main():
-    return 'Hi!'
+def main(request):
+    return Response(request=request, text=f'Hi! {request.user}')
 
 
 if __name__ == '__main__':
@@ -44,3 +44,23 @@ if __name__ == '__main__':
 ## License:
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+
+## Dependencies:
+
+```bash
+pip==19.0.3
+setuptools==41.0.0
+
+# dependencies for slackclient
+certifi==2019.3.9
+chardet==3.0.4
+idna==2.8
+requests==2.21.0
+six==1.12.0
+urllib3==1.24.2
+websocket-client==0.47.0
+
+# base app dependency
+slackclient==1.3.1
+```

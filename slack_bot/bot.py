@@ -1,50 +1,14 @@
+import json
 import os
 import time
 
 from slackclient import SlackClient
 
+from slack_bot.models import Message, Response
 from slack_bot.routes import Routers
 
 
 RTM_READ_DELAY = os.getenv('RTM_READ_DELAY', 1)
-TOKEN = os.getenv('SLACK_TOKEN')
-
-
-def send(sc: SlackClient):
-    sc.api_call(
-        'chat.postMessage',
-        channel='#general',
-        text='try it',
-        username='Mario',
-        icon_emoji=':mario:'
-    )
-
-
-def client_connected(token: str) -> SlackClient:
-    sc = SlackClient(token=token)
-    if sc.rtm_connect():
-        return sc
-    raise Exception('Validate your token')
-
-
-class Message:
-
-    def __init__(self, raw):
-        self._raw_message = raw
-
-    @property
-    def text(self):
-        return 'Hello'
-
-    @property
-    def user(self):
-        return 'Name user'
-
-
-class Response:
-
-    def __init__(self, text):
-        self.text = text
 
 
 class Application:
@@ -58,8 +22,29 @@ class Application:
     @property
     def client(self):
         if not self._client:
-            self._client = client_connected(token=self._token)
+            self._client = self._client_connected()
         return self._client
+
+    def _client_connected(self) -> SlackClient:
+        sc = SlackClient(token=self._token)
+        if sc.rtm_connect():
+            return sc
+        raise Exception('Validate your token')
+
+    def _send(self, response: Response) -> bool:
+        """
+        sc.api_call(
+            'chat.postMessage',
+            channel='#general',
+            text='try it',
+            username='Mario',
+            icon_emoji=':mario:'
+        )
+        :param Response response:
+        :return: bool
+        """
+        self.client.api_call(**response.to_dict())
+        return True
 
     def check(self):
         self._bot_id = self.client.api_call("auth.test")["user_id"]
@@ -75,26 +60,28 @@ class Application:
         return wrapper
 
     def add_routes(self, routes: list):
-        raise NotImplementedError
+        raise self._routers.table.add_routes(routes)
 
     def _process_message(self, raw_msg):
         if not raw_msg:
             return False
 
-        # parse
+        # parse message and find need handler
         msg = Message(raw_msg)
         handler = self._routers.find_handler(msg.text)
         if handler is None:
             return False
 
-        # send
-        handler(msg)
-        send(self.client)
-        return True
+        # send response to slack
+        response = handler(msg)
+        if not isinstance(response, Response):
+            raise TypeError('Handler must be return instance Response class')
+        return self._send(response)
 
     def run(self):
         while True:
             raw_msg = self.client.rtm_read()
+            print(json.dumps(raw_msg))
             self._process_message(raw_msg)
             # all action done
             time.sleep(RTM_READ_DELAY)
