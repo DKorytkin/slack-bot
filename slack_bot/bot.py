@@ -10,7 +10,7 @@ RTM_READ_DELAY = os.getenv('RTM_READ_DELAY', 1)
 TOKEN = os.getenv('SLACK_TOKEN')
 
 
-def send(sc):
+def send(sc: SlackClient):
     sc.api_call(
         'chat.postMessage',
         channel='#general',
@@ -20,12 +20,11 @@ def send(sc):
     )
 
 
-def client_connected(token):
+def client_connected(token: str) -> SlackClient:
     sc = SlackClient(token=token)
     if sc.rtm_connect():
         return sc
-    else:
-        raise Exception('Validate your token')
+    raise Exception('Validate your token')
 
 
 class Message:
@@ -42,12 +41,25 @@ class Message:
         return 'Name user'
 
 
+class Response:
+
+    def __init__(self, text):
+        self.text = text
+
+
 class Application:
 
     def __init__(self, token):
-        self.client = client_connected(token=token)
+        self._token = token
+        self._client = None
         self._bot_id = None
         self._routers = Routers()
+
+    @property
+    def client(self):
+        if not self._client:
+            self._client = client_connected(token=self._token)
+        return self._client
 
     def check(self):
         self._bot_id = self.client.api_call("auth.test")["user_id"]
@@ -65,18 +77,24 @@ class Application:
     def add_routes(self, routes: list):
         raise NotImplementedError
 
+    def _process_message(self, raw_msg):
+        if not raw_msg:
+            return False
+
+        # parse
+        msg = Message(raw_msg)
+        handler = self._routers.find_handler(msg.text)
+        if handler is None:
+            return False
+
+        # send
+        handler(msg)
+        send(self.client)
+        return True
+
     def run(self):
         while True:
             raw_msg = self.client.rtm_read()
-
-            # parse
-            msg = Message(raw_msg)
-            handler = self._routers.find_handler(msg.text)
-
-            # send
-            if handler is not None:
-                handler(msg)
-                send(self.client)
-
+            self._process_message(raw_msg)
             # all action done
             time.sleep(RTM_READ_DELAY)
