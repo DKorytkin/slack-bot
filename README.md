@@ -48,11 +48,22 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Dependencies:
 
+*base*
+
 ```bash
 pip==19.0.3
 setuptools==41.0.0
+```
 
-# dependencies for slackclient
+*application dependencies*
+
+```bash
+slackclient==1.3.1
+```
+
+*slackclient dependencies*
+
+```bash
 certifi==2019.3.9
 chardet==3.0.4
 idna==2.8
@@ -60,7 +71,4 @@ requests==2.21.0
 six==1.12.0
 urllib3==1.24.2
 websocket-client==0.47.0
-
-# base app dependency
-slackclient==1.3.1
 ```
