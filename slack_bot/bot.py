@@ -82,7 +82,7 @@ class Application:
         self.client.api_call(**response.to_dict())
         return True
 
-    def route(self, rout, channels=None, users=None):
+    def route(self, route, channels=None, users=None):
         """
         Decorator add some bot actions if route wen equal message
         Usage:
@@ -93,12 +93,12 @@ class Application:
             def some_bot_action(request):
                 return Response(request=request, text='Hi!')
 
-        :param str rout: target message in slack
+        :param str route: target message in slack
         :param list[str] channels: only for subscribe channels
         :param list[str] users: only for subscribe users
         """
         def wrapper(handler):
-            self._routers.table.add_route(rout, handler, channels, users)
+            self._routers.table.add_route(route, handler, channels, users)
             return handler
         return wrapper
 

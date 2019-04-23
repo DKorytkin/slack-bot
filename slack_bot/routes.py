@@ -64,7 +64,7 @@ class RoutersTable(metaclass=Singleton):
     def __init__(self):
         self.routes = set()
 
-    def route(self, rout: str, channels: List[str] = None, users: List[str] = None) -> Callable:
+    def route(self, route: str, channels: List[str] = None, users: List[str] = None) -> Callable:
         """
         Decorator add some bot actions if route wen equal message
         Usage:
@@ -74,29 +74,29 @@ class RoutersTable(metaclass=Singleton):
             def some_bot_action(request):
                 return Response(request=request, text='Hi!')
 
-        :param str rout: target message in slack
+        :param str route: target message in slack
         :param list[str] channels: only for subscribe channels
         :param list[str] users: only for subscribe users
         """
         def wrapper(handler):
-            self.add_route(rout, handler, channels, users)
+            self.add_route(route, handler, channels, users)
             return handler
         return wrapper
 
     def add_route(
         self,
-        rout: str,
+        route: str,
         handler: Callable,
         channels: List[str] = None,
         users: List[str] = None
     ) -> Set[Route]:
         """
-        :param str rout: message
+        :param str route: message
         :param function handler: action for message
         :param list channels: subscribe by channels only
         :param list users: subscribe by user messages only
         """
-        self.routes.add(Route(rout, handler, channels, users))
+        self.routes.add(Route(route, handler, channels, users))
         return self.routes
 
     def add_routes(self, routes: list) -> Set[Route]:
@@ -122,7 +122,7 @@ class Routers:
         self.table = RoutersTable()
 
     def find_route(self, msg: Message) -> Union[Route, None]:
-        for rout in self.table.routes:
-            if rout.validated(msg):
-                return rout
+        for route in self.table.routes:
+            if route.validated(msg):
+                return route
         return None
