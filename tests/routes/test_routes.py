@@ -16,6 +16,26 @@ def test_routes_init():
     assert isinstance(routes.table, RoutersTable)
 
 
+def test_routes_str():
+    # Refresh singleton instance
+    RoutersTable.instance = None
+
+    routes = Routers()
+    assert str(routes) == '<Routers has 0>'
+    routes.table.add_route('path', lambda x: x)
+    assert str(routes) == '<Routers has 1>'
+
+
+def test_routes_length():
+    # Refresh singleton instance
+    RoutersTable.instance = None
+
+    routes = Routers()
+    assert len(routes) == 0
+    routes.table.add_route('path', lambda x: x)
+    assert len(routes) == 1
+
+
 @pytest.mark.parametrize('params', (
     {'route': 'hello'},
     {'route': 'hello', 'channels': ['C1']},

@@ -2,6 +2,9 @@ from slack_bot.routes import RoutersTable, Route
 
 
 def test_make_single_table():
+    # Refresh singleton instance
+    RoutersTable.instance = None
+
     t1 = RoutersTable()
     t2 = RoutersTable()
     assert t1 == t2
@@ -12,13 +15,33 @@ def test_make_single_table():
     assert t1.routes == t2.routes
 
 
-def test_init():
+def test_routers_table_init():
     # Refresh singleton instance
     RoutersTable.instance = None
 
     t = RoutersTable()
     assert isinstance(t.routes, set)
     assert t.routes == set()
+
+
+def test_routers_table_length():
+    # Refresh singleton instance
+    RoutersTable.instance = None
+
+    table = RoutersTable()
+    assert len(table) == 0
+    table.add_route('some path', lambda x: x)
+    assert len(table) == 1
+
+
+def test_routers_table_str():
+    # Refresh singleton instance
+    RoutersTable.instance = None
+
+    table = RoutersTable()
+    assert str(table) == '<RoutersTable has 0 routes>'
+    table.add_route('some path', lambda x: x)
+    assert str(table) == '<RoutersTable has 1 routes>'
 
 
 def test_add_route_full_fields():

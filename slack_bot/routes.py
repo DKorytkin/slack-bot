@@ -64,6 +64,15 @@ class RoutersTable(metaclass=Singleton):
     def __init__(self):
         self.routes = set()
 
+    def __len__(self):
+        return len(self.routes)
+
+    def __str__(self):
+        return f'<RoutersTable has {self.__len__()} routes>'
+
+    def __repr__(self):
+        return self.__str__()
+
     def route(self, route: str, channels: List[str] = None, users: List[str] = None) -> Callable:
         """
         Decorator add some bot actions if route wen equal message
@@ -120,6 +129,15 @@ class Routers:
 
     def __init__(self):
         self.table = RoutersTable()
+
+    def __len__(self):
+        return len(self.table)
+
+    def __str__(self):
+        return f'<Routers has {self.__len__()}>'
+
+    def __repr__(self):
+        return self.__str__()
 
     def find_route(self, msg: Message) -> Union[Route, None]:
         for route in self.table.routes:
