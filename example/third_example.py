@@ -11,6 +11,6 @@ def say_hello(request):
 if __name__ == '__main__':
     app = Application(token=os.getenv('SLACK_TOKEN'))
     app.add_routes([
-        Route(rout='Hello', handler=say_hello),
+        Route(route='Hello', handler=say_hello),
     ])
     app.run()

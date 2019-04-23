@@ -15,15 +15,15 @@ class Singleton(type):
 
 class Route:
 
-    def __init__(self, rout, handler, channels=None, users=None):
-        self.rout = rout
+    def __init__(self, route, handler, channels=None, users=None):
+        self.route = route
         self.handler = handler
         self.channels = channels
         self.users = users
 
     def __str__(self):
         return (
-            f'<Rout rout={self.rout} handler={self.handler} '
+            f'<Route {repr(self.route)} handler={self.handler} '
             f'channels={self.channels} users={self.users}>'
         )
 
@@ -40,10 +40,10 @@ class Route:
             return True
         return bool(channel in self.channels)
 
-    def validate_message(self, message) -> bool:
+    def validate_message(self, message: str) -> bool:
         # TODO need implementation regexp
         # from parse import parse???
-        return bool(self.rout == message)
+        return bool(self.route == message)
 
     def validated(self, request: Message) -> bool:
         if not self.validate_users(request.user):
@@ -64,7 +64,16 @@ class RoutersTable(metaclass=Singleton):
     def __init__(self):
         self.routes = set()
 
-    def route(self, rout: str, channels: List[str] = None, users: List[str] = None) -> Callable:
+    def __len__(self):
+        return len(self.routes)
+
+    def __str__(self):
+        return f'<RoutersTable has {self.__len__()} routes>'
+
+    def __repr__(self):
+        return self.__str__()
+
+    def route(self, route: str, channels: List[str] = None, users: List[str] = None) -> Callable:
         """
         Decorator add some bot actions if route wen equal message
         Usage:
@@ -74,29 +83,29 @@ class RoutersTable(metaclass=Singleton):
             def some_bot_action(request):
                 return Response(request=request, text='Hi!')
 
-        :param str rout: target message in slack
+        :param str route: target message in slack
         :param list[str] channels: only for subscribe channels
         :param list[str] users: only for subscribe users
         """
         def wrapper(handler):
-            self.add_route(rout, handler, channels, users)
+            self.add_route(route, handler, channels, users)
             return handler
         return wrapper
 
     def add_route(
         self,
-        rout: str,
+        route: str,
         handler: Callable,
         channels: List[str] = None,
         users: List[str] = None
     ) -> Set[Route]:
         """
-        :param str rout: message
+        :param str route: message
         :param function handler: action for message
         :param list channels: subscribe by channels only
         :param list users: subscribe by user messages only
         """
-        self.routes.add(Route(rout, handler, channels, users))
+        self.routes.add(Route(route, handler, channels, users))
         return self.routes
 
     def add_routes(self, routes: list) -> Set[Route]:
@@ -121,8 +130,17 @@ class Routers:
     def __init__(self):
         self.table = RoutersTable()
 
+    def __len__(self):
+        return len(self.table)
+
+    def __str__(self):
+        return f'<Routers has {self.__len__()}>'
+
+    def __repr__(self):
+        return self.__str__()
+
     def find_route(self, msg: Message) -> Union[Route, None]:
-        for rout in self.table.routes:
-            if rout.validated(msg):
-                return rout
+        for route in self.table.routes:
+            if route.validated(msg):
+                return route
         return None
