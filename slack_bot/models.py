@@ -8,6 +8,21 @@ class Message:
         self._raw_message = raw[0] if len(raw) == 1 and isinstance(raw, list) else raw
         self._match_info = {}
 
+    def __str__(self):
+        return (
+            f'<Message {self.type} '
+            f'user={self.user} '
+            f'channel={self.channel} '
+            f'info={self._match_info}>'
+        )
+
+    def __repr__(self):
+        return self.__str__()
+
+    @property
+    def _message(self):
+        return self._raw_message.get('message', {})
+
     @property
     def match_info(self) -> dict:
         return self._match_info
@@ -32,7 +47,10 @@ class Message:
 
     @property
     def client_msg_id(self) -> str:
-        return self._raw_message.get('client_msg_id')
+        msg_id = self._raw_message.get('client_msg_id')
+        if self.is_message_changed() and msg_id is None:
+            msg_id = self._message.get('client_msg_id')
+        return msg_id
 
     @property
     def team(self) -> str:
@@ -48,7 +66,10 @@ class Message:
 
     @property
     def user(self) -> str:
-        return self._raw_message.get('user')
+        user = self._raw_message.get('user')
+        if self.is_message_changed() and user is None:
+            user = self._message.get('user')
+        return user
 
     @property
     def event_ts(self) -> str:
@@ -57,6 +78,9 @@ class Message:
     @property
     def ts(self) -> str:
         return self._raw_message.get('ts')
+
+    def is_message_changed(self) -> bool:
+        return bool('message_changed' == self.subtype)
 
     def is_type_message(self) -> bool:
         return bool('message' == self.type)
@@ -115,7 +139,7 @@ class Response:
             'method': self.method,
             'text': self.text,
             'channel': self._request.channel,
-            'us_user': True,
+            'as_user': True,
             'icon_emoji': ':ghost:'
         }
         return d
