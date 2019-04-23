@@ -15,15 +15,15 @@ class Singleton(type):
 
 class Route:
 
-    def __init__(self, rout, handler, channels=None, users=None):
-        self.rout = rout
+    def __init__(self, route, handler, channels=None, users=None):
+        self.route = route
         self.handler = handler
         self.channels = channels
         self.users = users
 
     def __str__(self):
         return (
-            f'<Rout rout={self.rout} handler={self.handler} '
+            f'<Route {repr(self.route)} handler={self.handler} '
             f'channels={self.channels} users={self.users}>'
         )
 
@@ -40,10 +40,10 @@ class Route:
             return True
         return bool(channel in self.channels)
 
-    def validate_message(self, message) -> bool:
+    def validate_message(self, message: str) -> bool:
         # TODO need implementation regexp
         # from parse import parse???
-        return bool(self.rout == message)
+        return bool(self.route == message)
 
     def validated(self, request: Message) -> bool:
         if not self.validate_users(request.user):
