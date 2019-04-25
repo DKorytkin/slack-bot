@@ -26,6 +26,8 @@ pip install slack-bot
 Code for base slack bot:
 
 ```python
+# run.py
+
 import os
 
 from slack_bot import Application, Response
@@ -74,10 +76,73 @@ CMD ['python', '/app/run.py']
 ```
 
 ### Examples:
+Many examples, how to use `slack-bot` 
 
- - [init routes in app as decorator](example/first_example.py) 
- - [init routes in table](example/second_example.py) 
- - [init routes in app](example/third_example.py) 
+
+- Adding handlers to app with `@app.route` decorator
+
+```python
+import os
+
+from slack_bot import Application, Response
+
+
+TOKEN = os.getenv('SLACK_TOKEN')
+
+
+app = Application(token=TOKEN)
+
+
+@app.route('hello', channels=[], users=[])
+def main(request):
+    return Response(request=request, text=f'Hi! {request.user}')
+
+
+if __name__ == '__main__':
+    app.run()
+``` 
+
+- Use routes table, for adding handlers to app
+
+```python
+import os
+
+from slack_bot import Application, Response, RoutersTable
+
+
+table = RoutersTable()
+
+
+@table.route('hello')
+def say_hello(request):
+    return Response(request=request, text=f'Hi! {request.user}')
+
+
+if __name__ == '__main__':
+    app = Application(token=os.getenv('SLACK_TOKEN'))
+    app.run()
+
+``` 
+
+- Adding all handlers to app
+
+```python
+import os
+
+from slack_bot import Application, Response, Route
+
+
+def say_hello(request):
+    return Response(request=request, text=f'Hi! {request.user}')
+
+
+if __name__ == '__main__':
+    app = Application(token=os.getenv('SLACK_TOKEN'))
+    app.add_routes([
+        Route(route='Hello', handler=say_hello),
+    ])
+    app.run()
+``` 
 
 ## Authors:
 
