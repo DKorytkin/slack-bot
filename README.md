@@ -2,6 +2,16 @@
 # slack-bot
 Application for easy make slack bot
 
+## Content:
+  - [Getting started](#getting-started)
+    - [How to use](#usage)
+    - [Install](#installing)
+    - [Dockerfile example](#dockerfile-example)
+    - [Examples](#examples)
+  - [Authors](#authors)
+  - [License](#license)
+  - [Dependencies](#dependencies)
+
 
 ## Getting Started:
 
@@ -12,6 +22,8 @@ pip install slack-bot
 ```
 
 ### Usage:
+
+Code for base slack bot:
 
 ```python
 import os
@@ -37,8 +49,29 @@ def deploy_staging(request):
 if __name__ == '__main__':
     app.run()
 ```
+Result:
 
 ![chat example](./chat_example.png)
+
+### Dockerfile example:
+
+```dockerfile
+FROM python:3.7-alpine
+
+WORKDIR app/
+
+# This env variable by defauult equal 1
+ENV RTM_READ_DELAY=1
+
+# Run install your requirements
+RUN pip install slack-bot
+
+# Copy application modules to docker container
+COPY . /app/
+
+# Run module with intit application
+CMD ['python', '/app/run.py']
+```
 
 ### Examples:
 
@@ -68,6 +101,7 @@ setuptools==41.0.0
 
 ```bash
 slackclient==1.3.1
+parse==1.12.0
 ```
 
 *slackclient dependencies*
