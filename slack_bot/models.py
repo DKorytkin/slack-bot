@@ -7,6 +7,7 @@ class Message:
         self._raw = raw
         self._raw_message = raw[0] if len(raw) == 1 and isinstance(raw, list) else raw
         self._match_info = {}
+        self._info = None
 
     def __str__(self):
         return (
@@ -22,6 +23,16 @@ class Message:
     @property
     def _message(self):
         return self._raw_message.get('message', {})
+
+    @property
+    def info(self) -> dict:
+        return self._info
+
+    @info.setter
+    def info(self, info: dict):
+        if not isinstance(info, (tuple, list, set)):
+            raise TypeError('Info must be one of (tuple, list, set)')
+        self._info = info
 
     @property
     def match_info(self) -> dict:

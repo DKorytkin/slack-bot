@@ -1,5 +1,7 @@
 from typing import Callable, List, Set, Union
 
+from parse import search
+
 from slack_bot.models import Message
 
 
@@ -30,32 +32,44 @@ class Route:
     def __repr__(self):
         return self.__str__()
 
-    def validate_users(self, user: str) -> bool:
+    def validate_users(self, request: Message) -> bool:
+        if not request.user:
+            return False
+
         if not self.users:
             return True
-        return bool(user in self.users)
+        return bool(request.user in self.users)
 
-    def validate_channels(self, channel: str) -> bool:
+    def validate_channels(self, request: Message) -> bool:
+        if not request.channel:
+            return False
+
         if not self.channels:
             return True
-        return bool(channel in self.channels)
+        return bool(request.channel in self.channels)
 
-    def validate_message(self, message: str) -> bool:
-        # TODO need implementation regexp
-        # from parse import parse???
-        return bool(self.route == message)
+    def validate_message(self, request: Message) -> bool:
+        if not request.text or not isinstance(request.text, str):
+            return False
+
+        result = search(self.route, request.text)
+        if not result:
+            return False
+
+        request.match_info = result.named
+        request.info = result.fixed
+        return True
 
     def validated(self, request: Message) -> bool:
-        if not self.validate_users(request.user):
+        if not self.validate_users(request):
             return False
 
-        if not self.validate_channels(request.channel):
+        if not self.validate_channels(request):
             return False
 
-        if not self.validate_message(request.text):
+        if not self.validate_message(request):
             return False
 
-        # message.match_info = info
         return True
 
 

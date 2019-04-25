@@ -52,7 +52,7 @@ def test_init_require_attributes(params):
     ('U2', False)))
 def test_validate_users_with_subscribers(user, exp_result):
     r = Route('path', my_handler, ['#general'], ['U1'])
-    assert r.validate_users(user) is exp_result
+    assert r.validate_users(MagicMock(user=user)) is exp_result
 
 
 @pytest.mark.parametrize('subscribers', (None, [], set(), tuple()))
@@ -64,7 +64,7 @@ def test_validate_users_with_subscribers(user, exp_result):
     ('U2', True)))
 def test_validate_users_without_subscribers(user, exp_result, subscribers):
     r = Route('path', my_handler, ['#general'], subscribers)
-    assert r.validate_users(user) is exp_result
+    assert r.validate_users(MagicMock(user=user)) is exp_result
 
 
 @pytest.mark.parametrize('channel, exp_result', (
@@ -76,7 +76,7 @@ def test_validate_users_without_subscribers(user, exp_result, subscribers):
     ('C2', False)))
 def test_validate_channels_with_subscribers(channel, exp_result):
     r = Route('path', my_handler, ['#general'])
-    assert r.validate_channels(channel) is exp_result
+    assert r.validate_channels(MagicMock(channel=channel)) is exp_result
 
 
 @pytest.mark.parametrize('subscribers', (None, [], set(), tuple()))
@@ -89,28 +89,51 @@ def test_validate_channels_with_subscribers(channel, exp_result):
     ('C2', True)))
 def test_validate_channels_without_subscribers(channel, exp_result, subscribers):
     r = Route('path', my_handler, subscribers)
-    assert r.validate_channels(channel) is exp_result
+    assert r.validate_channels(MagicMock(channel=channel)) is exp_result
 
 
 @pytest.mark.parametrize('route, msg, exp_result', (
-    ('', '', True),
-    ('', 'fail', False),
+    ('', '', False),
     ('', True, False),
     (None, True, False),
-    (None, None, True),
-    ('my message', 'my message', True)))
-def test_validate_message(route, msg, exp_result):
+    (None, None, False),
+    ('deploy {app:l}', 'deploy 123', False),
+    ('deploy {app:^w} to v{version:^S}', 'deploy rc', False),
+    ('deploy {app:^w} to v{version:^S}', 'deploy rc to v', False),
+    ('<@{user:w}> {ask:^w}', 'hi <@UHVN4M5B3>!', False),
+    ('deploy {:l}', 'deploy 12', False)))
+def test_validate_not_correct_message(route, msg, exp_result):
     r = Route(route, my_handler)
-    assert r.validate_message(msg) is exp_result
+    request = MagicMock(user='U1', channel='C1', text=msg, match_info={}, info=None)
+    assert r.validate_message(request) is exp_result
+    assert request.match_info == {}
+    assert request.info is None
+
+
+@pytest.mark.parametrize('route, msg, exp_result, info, match', (
+    ('', 'test', True, (), {}),
+    ('deploy {:w}', 'deploy rc', True, ('rc',), {}),
+    ('deploy {app:w}', 'deploy rc', True, (), {'app': 'rc'}),
+    ('deploy {app:^w}', 'deploy   dev   ', True, (), {'app': 'dev'}),
+    ('deploy {app:^w} to v{version:^d}', 'deploy rc to v2', True, (), {'app': 'rc', 'version': 2}),
+    ('deploy {app:^w} to v{ver:^S}', 'deploy rc to v2.1 ', True, (), {'app': 'rc', 'ver': '2.1'}),
+    ('<@{user:w}> {ask:^w}', '<@UHVN4M5B3> hi all!', True, (), {'ask': 'hi', 'user': 'UHVN4M5B3'}),
+    ('my message', 'my message', True, (), {})))
+def test_validate_correct_message(route, msg, exp_result, info, match):
+    route = Route(route, my_handler)
+    request = MagicMock(user='U1', channel='C1', text=msg, match_info={}, info=None)
+    assert route.validate_message(request) is exp_result
+    assert request.match_info == match
+    assert request.info == info
 
 
 @pytest.mark.parametrize('route, channels, users, exp_result', (
     ('hello', [], [], True),
     ('hello', ['C1'], [], True),
     ('hello', ['C1'], ['U1'], True),
-    ('hell', [], [], False),
-    ('hell', ['C1'], [], False),
-    ('hell', ['C1'], ['U1'], False),
+    ('hell', [], [], True),
+    ('hell', ['C1'], [], True),
+    ('hell', ['C1'], ['U1'], True),
     ('hello', ['C2'], [], False),
     ('hello', [], ['U2'], False),
     ('hello', ['C1'], ['U2'], False),))
