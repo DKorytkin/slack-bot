@@ -11,6 +11,9 @@ install:
 script:
 - pytest --cov-report xml --cov=slack_bot
 
+after_success:
+- codecov -t "$CODECOV_TOKEN"
+
 cache: pip
 deploy:
   provider: pypi
