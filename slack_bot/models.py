@@ -97,7 +97,9 @@ class Message:
         return bool('message' == self.type)
 
     def is_bot_message(self) -> bool:
-        return bool('bot_message' == self.subtype or self._raw_message.get('bot_id'))
+        if 'bot_message' == self.subtype:
+            return True
+        return bool(self._raw_message.get('bot_id'))
 
     def is_suppress_notification(self) -> bool:
         return bool(self._raw_message.get('suppress_notification'))

@@ -33,7 +33,7 @@ class Route:
         return self.__str__()
 
     def validate_users(self, request: Message) -> bool:
-        if not request.user:
+        if not request.user or request.is_bot_message():
             return False
 
         if not self.users:
