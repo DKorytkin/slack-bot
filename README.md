@@ -3,6 +3,8 @@
 
 [![Build Status](https://travis-ci.org/DKorytkin/slack-bot.svg?branch=master)](https://travis-ci.org/DKorytkin/slack-bot)
 [![Pypi](https://img.shields.io/pypi/v/slack-bot.svg)](https://pypi.python.org/pypi/slack-bot)
+[![Cov](https://codecov.io/gh/DKorytkin/slack-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/DKorytkin/slack-bot)
+
 
 Application for easy make slack bot
 
