@@ -12,7 +12,7 @@ class Message:
     def __str__(self):
         return (
             f'<Message {self.type} '
-            f'user={self.user} '
+            f'user={self.user_id} '
             f'channel={self.channel} '
             f'info={self._match_info}>'
         )

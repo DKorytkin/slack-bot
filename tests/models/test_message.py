@@ -120,7 +120,8 @@ def test_base_message_attributes():
         "event_ts": "1555937221.001500",
         "ts": "1555937221.001500"
     }])
-    assert m.user == 'U0DF0B546'
+    assert m.user_id == 'U0DF0B546'
+    assert m.user == '<@U0DF0B546>'
     assert m.type == 'message'
     assert m.subtype is None
     assert m.client_msg_id == 'eb4cbc49-e1a8-4c47-b501-0ac0dbbc2c4a'
@@ -157,7 +158,8 @@ def test_edited_message_attributes():
         "event_ts": "1555937291.001600",
         "ts": "1555937291.001600"
     }])
-    assert m.user == 'U0DF0B546'
+    assert m.user_id == 'U0DF0B546'
+    assert m.user == '<@U0DF0B546>'
     assert m.type == 'message'
     assert m.subtype == 'message_changed'
     assert m.client_msg_id == 'eb4cbc49-e1a8-4c47-b501-0ac0dbbc2c4a'
@@ -173,7 +175,8 @@ def test_hello_action_message_attributes():
         "channel": "C0DEW8K45",
         "user": "U0DF0B546"
     }])
-    assert m.user == 'U0DF0B546'
+    assert m.user_id == 'U0DF0B546'
+    assert m.user == '<@U0DF0B546>'
     assert m.type == 'user_typing'
     assert m.channel == 'C0DEW8K45'
     assert m.subtype is None

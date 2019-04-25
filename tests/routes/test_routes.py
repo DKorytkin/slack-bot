@@ -5,9 +5,6 @@ import pytest
 from slack_bot.routes import Route, Routers, RoutersTable
 
 
-MOCK_REQUEST = MagicMock(user='U1', channel='C1', text='hello')
-
-
 def test_routes_init():
     # Refresh singleton instance
     RoutersTable.instance = None
@@ -41,12 +38,15 @@ def test_routes_length():
     {'route': 'hello', 'channels': ['C1']},
     {'route': 'hello', 'channels': ['C1'], 'users': ['U1']}))
 def test_find_exist_route(params):
-    """
-    MOCK_REQUEST = MagicMock(user='U1', channel='C1', text='hello')
-    """
     # Refresh singleton instance
     RoutersTable.instance = None
     table = RoutersTable()
+    request = MagicMock(
+        user_id='U1',
+        channel='C1',
+        text='hello',
+        **{'is_bot_message.return_value': False}
+    )
 
     @table.route('how do you do?')
     def answer(request):
@@ -57,10 +57,10 @@ def test_find_exist_route(params):
         pass
 
     routes = Routers()
-    route = routes.find_route(MOCK_REQUEST)
+    route = routes.find_route(request)
     assert isinstance(route, Route)
     # TODO need fix after implement parse in route
-    assert route.route == MOCK_REQUEST.text
+    assert route.route == request.text
     assert route.handler == hello
 
 
@@ -72,11 +72,14 @@ def test_find_exist_route(params):
     {'route': 'hello', 'channels': ['C2'], 'users': ['U1']},
     {'route': 'hello', 'channels': ['C1'], 'users': ['U2']}))
 def test_find_not_exist_route(params):
-    """
-    MOCK_REQUEST = MagicMock(user='U1', channel='C1', text='hello')
-    """
     # Refresh singleton instance
     RoutersTable.instance = None
+    request = MagicMock(
+        user_id='U1',
+        channel='C1',
+        text='hello',
+        **{'is_bot_message.return_value': False}
+    )
     table = RoutersTable()
 
     @table.route('how do you do?')
@@ -88,5 +91,5 @@ def test_find_not_exist_route(params):
         pass
 
     routes = Routers()
-    route = routes.find_route(MOCK_REQUEST)
+    route = routes.find_route(request)
     assert route is None

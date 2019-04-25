@@ -33,12 +33,13 @@ class Route:
         return self.__str__()
 
     def validate_users(self, request: Message) -> bool:
-        if not request.user or request.is_bot_message():
+        if not request.user_id or request.is_bot_message():
             return False
 
         if not self.users:
             return True
-        return bool(request.user in self.users)
+
+        return bool(request.user_id in self.users)
 
     def validate_channels(self, request: Message) -> bool:
         if not request.channel:

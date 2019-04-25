@@ -5,9 +5,6 @@ import pytest
 from slack_bot.routes import Route
 
 
-MOCK_REQUEST = MagicMock(user='U1', channel='C1', text='hello')
-
-
 def my_handler(request):
     pass
 
@@ -52,7 +49,8 @@ def test_init_require_attributes(params):
     ('U2', False)))
 def test_validate_users_with_subscribers(user, exp_result):
     r = Route('path', my_handler, ['#general'], ['U1'])
-    assert r.validate_users(MagicMock(user=user)) is exp_result
+    request = MagicMock(user_id=user, **{'is_bot_message.return_value': False})
+    assert r.validate_users(request) is exp_result
 
 
 @pytest.mark.parametrize('subscribers', (None, [], set(), tuple()))
@@ -64,7 +62,20 @@ def test_validate_users_with_subscribers(user, exp_result):
     ('U2', True)))
 def test_validate_users_without_subscribers(user, exp_result, subscribers):
     r = Route('path', my_handler, ['#general'], subscribers)
-    assert r.validate_users(MagicMock(user=user)) is exp_result
+    request = MagicMock(user_id=user, **{'is_bot_message.return_value': False})
+    assert r.validate_users(request) is exp_result
+
+
+def test_validate_users_bot_without_subscribers():
+    r = Route('path', my_handler, ['#general'])
+    request = MagicMock(user_id='U1', **{'is_bot_message.return_value': True})
+    assert r.validate_users(request) is False
+
+
+def test_validate_users_bot_with_subscribers():
+    r = Route('path', my_handler, ['#general'], users=['U1'])
+    request = MagicMock(user_id='U1', **{'is_bot_message.return_value': True})
+    assert r.validate_users(request) is False
 
 
 @pytest.mark.parametrize('channel, exp_result', (
@@ -104,7 +115,7 @@ def test_validate_channels_without_subscribers(channel, exp_result, subscribers)
     ('deploy {:l}', 'deploy 12', False)))
 def test_validate_not_correct_message(route, msg, exp_result):
     r = Route(route, my_handler)
-    request = MagicMock(user='U1', channel='C1', text=msg, match_info={}, info=None)
+    request = MagicMock(user_id='U1', channel='C1', text=msg, match_info={}, info=None)
     assert r.validate_message(request) is exp_result
     assert request.match_info == {}
     assert request.info is None
@@ -121,7 +132,7 @@ def test_validate_not_correct_message(route, msg, exp_result):
     ('my message', 'my message', True, (), {})))
 def test_validate_correct_message(route, msg, exp_result, info, match):
     route = Route(route, my_handler)
-    request = MagicMock(user='U1', channel='C1', text=msg, match_info={}, info=None)
+    request = MagicMock(user_id='U1', channel='C1', text=msg, match_info={}, info=None)
     assert route.validate_message(request) is exp_result
     assert request.match_info == match
     assert request.info == info
@@ -138,8 +149,11 @@ def test_validate_correct_message(route, msg, exp_result, info, match):
     ('hello', [], ['U2'], False),
     ('hello', ['C1'], ['U2'], False),))
 def test_validated(route, channels, users, exp_result):
-    """
-    MOCK_REQUEST = MagicMock(user='U1', channel='C1', text='hello')
-    """
+    request = MagicMock(
+        user_id='U1',
+        channel='C1',
+        text='hello',
+        **{'is_bot_message.return_value': False}
+    )
     r = Route(route=route, handler=my_handler, channels=channels, users=users)
-    assert r.validated(MOCK_REQUEST) is exp_result
+    assert r.validated(request) is exp_result
