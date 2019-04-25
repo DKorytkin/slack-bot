@@ -76,11 +76,15 @@ class Message:
         return self._raw_message.get('text')
 
     @property
-    def user(self) -> str:
+    def user_id(self) -> str:
         user = self._raw_message.get('user')
         if self.is_message_changed() and user is None:
             user = self._message.get('user')
         return user
+
+    @property
+    def user(self):
+        return f'<@{self.user_id}>'
 
     @property
     def event_ts(self) -> str:

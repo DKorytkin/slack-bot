@@ -1,5 +1,5 @@
 
-# slack_bot
+# slack-bot
 Application for easy make slack bot
 
 
@@ -8,7 +8,7 @@ Application for easy make slack bot
 ### Installing:
 
 ```bash
-pip install slack_bot
+pip install slack-bot
 ```
 
 ### Usage:
@@ -16,7 +16,7 @@ pip install slack_bot
 ```python
 import os
 
-from slack_bot.bot import Application, Response
+from slack_bot import Application, Response
 
 
 app = Application(token=os.getenv('SLACK_TOKEN'))
@@ -27,9 +27,18 @@ def main(request):
     return Response(request=request, text=f'Hi! {request.user}')
 
 
+@app.route('deploy {app:w}')
+def deploy_staging(request):
+    current_app = request.match_info["app"]
+    # body for deploy staging ...
+    return Response(request=request, text=f'Start deploy {current_app}')
+
+
 if __name__ == '__main__':
     app.run()
 ```
+
+![chat example](./chat_example.png)
 
 ### Examples:
 

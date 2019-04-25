@@ -9,7 +9,7 @@ from slack_bot.models import Message, Response
 from slack_bot.routes import Routers, Route
 
 
-RTM_READ_DELAY = os.getenv('RTM_READ_DELAY', 1)
+RTM_READ_DELAY = int(os.getenv('RTM_READ_DELAY', 1))
 
 
 class Application:
