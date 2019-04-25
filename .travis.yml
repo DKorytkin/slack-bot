@@ -1,0 +1,24 @@
+dist: xenial
+language: python
+python:
+- '3.6'
+- '3.7'
+
+install:
+- pip install -U -r requirements.txt
+- pip install -U -r requirements-dev.txt
+
+script:
+- pytest --cov-report xml --cov=slack_bot
+
+cache: pip
+deploy:
+  provider: pypi
+  user: d.korytkin
+  password:
+    secure: RrZcRc260Edp7UdJaAP+TS7uxy+RZFR8eaAR5E59iem2GsyOXqDseC/vmQ4XHU+L4PXCsMLfbOOLeiZ1UTpT4xuwwWfAVdWqZfPNY5BosarqSStK+D6lj9qos9ZJok+G03tfmc4tlhxEtKiCy39If0ka6v2LC3WMJveyt91R2TFl3Oqp6Zljmz8BKW3iJzrKP3ys8gEjpoBvHW2+E84bYvbLG6AHaUEe19qa3tiEsVBn2mmRH5+9x8ZWMYvQseQHlOcVs9cN1ST0olh6+YUgOcX3WvZO87VFbZuDNK95g+yrcCRS89ptpdwEQFPJukKiJ51fqOFnPN5V71k3AXXAnopqxXKobU4V6OSiY+3P95umd5t8tA0ayK8R2cyiFJXpQ6+uUY54xikutiEScTBXOLQrVl8vUDWhI55nQlCgl3u5BPPb563aZzEmsDMPq9ZUkW5Fej3nmd8zerrzgEy+0HbnoOFCIpALQGr8ge9W1nDpOLfbChLzEfUvZQJv8PNJijmDXoHgyTuMFO4va8WSgw7DPaB4vLdMJTn4WTm4UizYGe52DibTuSWUOzv5VffoEyoihI9+fycbrzI4tZtOgGrFhl6b2l6m8XcmAp3I8NKoCbg3ccsRUry+yIlqwmEkf1q6+0n01QIJzaq9X7GEmFS03VY4ZVFQIm5/Sl2ILUs=
+  distributions: sdist
+  on:
+    tags: true
+    all_branches: true
+    python: 3.6

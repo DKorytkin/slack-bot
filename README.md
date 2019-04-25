@@ -1,6 +1,11 @@
 
 # slack-bot
+
+[![Build Status](https://travis-ci.org/DKorytkin/slack-bot.svg?branch=master)](https://travis-ci.org/DKorytkin/slack-bot)
+[![Pypi](https://img.shields.io/pypi/v/slack-bot.svg)](https://pypi.python.org/pypi/slack-bot)
+
 Application for easy make slack bot
+
 
 ## Content:
   - [Getting started](#getting-started)
