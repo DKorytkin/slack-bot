@@ -104,11 +104,8 @@ def test_app_add_routes():
         Route('hello', say_hello),
     ])
     assert len(app._routers) == 2
-    route1 = list(app._routers.table.routes)[0]
-    route2 = list(app._routers.table.routes)[1]
     assert all([isinstance(r, Route) for r in app._routers.table.routes])
-    assert route1.handler == do_deploy
-    assert route2.handler == say_hello
+    assert all([r.handler in (do_deploy, say_hello) for r in app._routers.table.routes])
 
 
 def test_app_process_message():
