@@ -73,7 +73,10 @@ class Message:
 
     @property
     def text(self) -> str:
-        return self._raw_message.get('text')
+        msg = self._raw_message.get('text')
+        if self.is_message_changed() and not msg:
+            msg = self._message.get('text')
+        return msg
 
     @property
     def user_id(self) -> str:
@@ -94,6 +97,10 @@ class Message:
     def ts(self) -> str:
         return self._raw_message.get('ts')
 
+    @property
+    def thread_ts(self) -> str:
+        return self._raw_message.get('thread_ts')
+
     def is_message_changed(self) -> bool:
         return bool('message_changed' == self.subtype)
 
@@ -111,7 +118,14 @@ class Message:
 
 class Response:
 
-    def __init__(self, request: Message, text: str, method: str = 'chat.postMessage', **kwargs):
+    def __init__(
+            self,
+            request: Message,
+            text: str,
+            method: str = 'chat.postMessage',
+            thread_reply: bool = False,
+            **kwargs
+    ):
         """
         Response required attributes:
             channel="C1234567890"   Channel, where message wrote
@@ -144,12 +158,20 @@ class Response:
         :param Message request:
         :param str text:
         :param str method:
+        :param bool thread_reply:
         :param kwargs:
         """
         self._request = request
         self.text = text
         self.method = method
         self.kw = kwargs
+        self.thread_reply = thread_reply
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return f'<Response method={self.method} reply={self.thread_reply}, kw={self.kw}>'
 
     def _base(self) -> dict:
         d = {
@@ -164,4 +186,6 @@ class Response:
     def to_dict(self) -> dict:
         data = self._base()
         data.update(self.kw)
+        if self.thread_reply:
+            data.update({'thread_ts': self._request.thread_ts or self._request.ts})
         return data

@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from typing import List
+from typing import List, Callable
 
 from slackclient import SlackClient
 
@@ -14,7 +14,7 @@ RTM_READ_DELAY = int(os.getenv('RTM_READ_DELAY', 1))
 
 class Application:
 
-    def __init__(self, token):
+    def __init__(self, token: str):
         self._token = token
         self._client = None
         self._bot_id = None
@@ -33,7 +33,7 @@ class Application:
         return self._client
 
     @client.setter
-    def client(self, custom_client):
+    def client(self, custom_client: SlackClient):
         """
         For easy tests only, add mocked client
         :param SlackClient custom_client: For example MagicMock()
@@ -97,7 +97,7 @@ class Application:
         :param list[str] channels: only for subscribe channels
         :param list[str] users: only for subscribe users
         """
-        def wrapper(handler):
+        def wrapper(handler: Callable):
             self._routers.table.add_route(route, handler, channels, users)
             return handler
         return wrapper
@@ -117,7 +117,7 @@ class Application:
         """
         self._routers.table.add_routes(routes)
 
-    def _process_message(self, raw_msg) -> bool:
+    def _process_message(self, raw_msg: List[dict]) -> bool:
         if not raw_msg:
             return False
 
@@ -131,6 +131,7 @@ class Application:
         response = route.handler(msg)
         if not isinstance(response, Response):
             raise TypeError('Handler must be return instance Response class')
+
         return self._send(response)
 
     def run(self):
