@@ -24,7 +24,7 @@ tests_require = parse_requirements(os.path.join(here, 'requirements-dev.txt'))
 
 setup(
     name="slack_bot",
-    version='0.0.2',
+    version='0.0.3',
     author='Denis Korytkin',
     author_email='dkorytkin@gmail.com',
     url='https://github.com/DKorytkin/slack-bot',
