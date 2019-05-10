@@ -1,16 +1,4 @@
-# -*- coding: utf-8 -*-
-
-import os
 from setuptools import setup, find_packages
-
-
-here = os.path.realpath(os.path.dirname(__file__))
-
-
-def parse_requirements(filename):
-    """Read pip-formatted requirements from a file."""
-    reqs = (line.strip() for line in open(filename))
-    return [line for line in reqs if line and not line.startswith("#")]
 
 
 def long_description():
@@ -18,13 +6,9 @@ def long_description():
         return fh.read()
 
 
-install_requirements = parse_requirements(os.path.join(here, 'requirements.txt'))
-tests_require = parse_requirements(os.path.join(here, 'requirements-dev.txt'))
-
-
 setup(
     name="slack_bot",
-    version='0.0.4',
+    version='0.0.5',
     author='Denis Korytkin',
     author_email='dkorytkin@gmail.com',
     url='https://github.com/DKorytkin/slack-bot',
@@ -40,11 +24,22 @@ setup(
         'slack_bot.routes',
     ],
     python_requires='>=3.6',
-    install_requires=install_requirements,
-    test_suite='tests',
-    tests_require=tests_require,
-    extras_require={'tests': tests_require},
-    data_files=[('', ['requirements.txt', 'requirements-dev.txt'])],
+    install_requires=[
+        # base
+        'pip>=19.0.3',
+        'setuptools>=41.0.0',
+        # for slackclient
+        'certifi==2019.3.9',
+        'chardet==3.0.4',
+        'idna==2.8',
+        'requests>=2.21.0,<3',
+        'six>=1.12.0',
+        'urllib3>=1.24.2,<2',
+        'websocket-client==0.47.0',
+        # for application
+        'slackclient==1.3.1,<2.0.0',
+        'parse>=1.12.0<2.0.0',
+    ],
     license='MIT license',
     classifiers=[
         'Development Status :: 4 - Beta',
