@@ -8,7 +8,7 @@ def long_description():
 
 setup(
     name="slack_bot",
-    version='0.0.6',
+    version='0.0.7',
     author='Denis Korytkin',
     author_email='dkorytkin@gmail.com',
     url='https://github.com/DKorytkin/slack-bot',
