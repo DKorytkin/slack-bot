@@ -24,7 +24,7 @@ tests_require = parse_requirements(os.path.join(here, 'requirements-dev.txt'))
 
 setup(
     name="slack_bot",
-    version='0.0.3',
+    version='0.0.4',
     author='Denis Korytkin',
     author_email='dkorytkin@gmail.com',
     url='https://github.com/DKorytkin/slack-bot',
@@ -44,9 +44,10 @@ setup(
     test_suite='tests',
     tests_require=tests_require,
     extras_require={'tests': tests_require},
+    data_files=[('', ['requirements.txt', 'requirements-dev.txt'])],
     license='MIT license',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries',
