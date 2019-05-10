@@ -34,7 +34,7 @@ setup(
         'idna==2.8',
         'requests>=2.21.0,<3',
         'six>=1.12.0',
-        'urllib3>=1.24.2,<2',
+        'urllib3>=1.24.2,<1.25.0',
         'websocket-client==0.47.0',
         # for application
         'slackclient==1.3.1,<2.0.0',
