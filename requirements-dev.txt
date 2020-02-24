@@ -22,6 +22,6 @@ webencodings==0.5.1
 # base
 pytest==4.4.1
 pytest-cov==2.6.1
-codecov==2.0.15
+codecov==2.0.16
 wheel==0.33.1
 twine==1.13.0
