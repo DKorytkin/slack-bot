@@ -20,7 +20,7 @@ tqdm==4.44.1
 webencodings==0.5.1
 
 # base
-pytest==4.4.1
+pytest==6.1.2
 pytest-cov==2.6.1
 codecov==2.0.15
 wheel==0.33.1
