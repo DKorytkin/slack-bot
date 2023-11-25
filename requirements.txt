@@ -4,7 +4,7 @@ setuptools>=41.0.0
 # for slackclient
 certifi==2019.3.9
 chardet==3.0.4
-idna==2.8
+idna==3.6
 requests>=2.21.0,<3
 six>=1.12.0
 urllib3==1.24.2,<1.25.0
